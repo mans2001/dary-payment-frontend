@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Dartech — Complete Your Payment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0f1e;
+      --surface:  #111827;
+      --surface2: #1a2235;
+      --border:   #1e2d45;
+      --accent:   #3b82f6;
+      --success:  #22c55e;
+      --danger:   #ef4444;
+      --warning:  #f59e0b;
+      --text:     #f1f5f9;
+      --muted:    #64748b;
+      --radius:   14px;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Sora', system-ui, sans-serif;
+      font-size: 15px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Loading ── */
+    #loading {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 20px;
+      z-index: 99;
+      transition: opacity 0.3s;
+    }
+    #loading.hide { opacity: 0; pointer-events: none; }
+    .logo-box {
+      width: 60px; height: 60px; border-radius: 16px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 700; color: #fff;
+      box-shadow: 0 0 30px rgba(59,130,246,0.4);
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error ── */
+    #error-screen {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px; text-align: center; gap: 12px;
+    }
+    #error-screen.show { display: flex; }
+    #error-screen .icon { font-size: 52px; }
+    #error-screen h2 { font-size: 20px; font-weight: 700; }
+    #error-screen p  { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+    /* ── Main ── */
+    #main { display: none; max-width: 480px; margin: 0 auto; padding: 20px 16px 48px; }
+    #main.show { display: block; }
+
+    /* Header */
+    .header {
+      display: flex; align-items: center; gap: 12px; padding: 16px 0 24px;
+    }
+    .header .logo-box { width: 44px; height: 44px; border-radius: 12px; font-size: 20px; flex-shrink: 0; }
+    .header h1 { font-size: 18px; font-weight: 700; }
+    .header p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 14px;
+    }
+    .card-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--muted); margin-bottom: 14px;
+    }
+
+    /* Amount */
+    .amount-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
+    .amount-big  { font-size: 44px; font-weight: 700; line-height: 1; }
+    .amount-cur  { font-size: 22px; font-weight: 500; color: var(--muted); }
+    .amount-note { font-size: 13px; color: var(--muted); }
+
+    /* InstaPay rows */
+    .ip-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;
+      gap: 10px;
+    }
+    .ip-row:last-child { margin-bottom: 0; }
+    .ip-label { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+    .ip-value { font-size: 14px; font-weight: 600; }
+    .copy-btn {
+      flex-shrink: 0;
+      background: var(--accent); border: none; color: white;
+      padding: 6px 14px; border-radius: 8px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .copy-btn:active  { transform: scale(0.95); }
+    .copy-btn.copied  { background: var(--success); }
+
+    /* Reference */
+    .ref-box {
+      background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
+      border: 1px solid rgba(59,130,246,0.35);
+      border-radius: 12px; padding: 18px;
+      text-align: center; margin-bottom: 12px;
+    }
+    .ref-label { font-size: 11px; color: var(--accent); font-weight: 700;
+                 letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+    .ref-code  { font-size: 30px; font-weight: 700; letter-spacing: 0.15em;
+                 font-family: 'Courier New', monospace; }
+    .ref-note  { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+    /* Steps */
+    .steps { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .step  { display: flex; gap: 12px; align-items: flex-start; }
+    .step-num {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      background: var(--accent); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .step-text { font-size: 13px; color: var(--muted); padding-top: 4px; line-height: 1.5; }
+    .step-text strong { color: var(--text); }
+
+    /* Form */
+    .form-title    { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .form-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    .field input {
+      width: 100%; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text); font-family: inherit; font-size: 14px;
+      padding: 12px 14px; outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+    .field input:focus { border-color: var(--accent); }
+    .field input::placeholder { color: var(--muted); opacity: 0.6; }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 12px; padding: 30px 16px;
+      text-align: center; cursor: pointer;
+      transition: all 0.15s; position: relative;
+    }
+    .upload-zone:hover, .upload-zone.over {
+      border-color: var(--accent);
+      background: rgba(59,130,246,0.05);
+    }
+    .upload-zone input {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-icon { font-size: 34px; margin-bottom: 10px; }
+    .upload-text { font-size: 13px; font-weight: 500; }
+    .upload-sub  { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* Preview */
+    #preview-wrap { display: none; margin-top: 12px; position: relative; }
+    #preview-wrap img {
+      width: 100%; border-radius: 10px; max-height: 200px;
+      object-fit: cover; display: block;
+    }
+    #remove-img {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(0,0,0,0.65); border: none; color: #fff;
+      width: 28px; height: 28px; border-radius: 50%; font-size: 16px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Submit */
+    .btn-submit {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      border: none; border-radius: 12px; color: white;
+      font-family: inherit; font-size: 15px; font-weight: 700;
+      cursor: pointer; margin-top: 6px;
+      box-shadow: 0 4px 24px rgba(59,130,246,0.35);
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-submit:active   { transform: scale(0.98); }
+    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    /* Already-reviewed state */
+    #state-section {
+      display: none; text-align: center; padding: 32px 0;
+    }
+    #state-section.show { display: block; }
+    #state-section .s-icon  { font-size: 52px; margin-bottom: 16px; }
+    #state-section h2 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+    #state-section p  { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 12px 22px; border-radius: 99px;
+      font-size: 13px; font-weight: 500; white-space: nowrap;
+      transition: transform 0.3s ease; z-index: 999;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    #toast.show    { transform: translateX(-50%) translateY(0); }
+    #toast.success { border-color: var(--success); color: var(--success); }
+    #toast.error   { border-color: var(--danger);  color: var(--danger);  }
+  </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="logo-box">D</div>
+  <div class="spinner"></div>
+</div>
+
+<!-- ERROR -->
+<div id="error-screen">
+  <div class="icon">⚠️</div>
+  <h2>Something went wrong</h2>
+  <p id="error-msg">Unable to load payment details.<br/>Please return to the app and try again.</p>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <div class="header">
+    <div class="logo-box">D</div>
+    <div>
+      <h1>Dartech</h1>
+      <p>Smart Home AI · Monthly Subscription</p>
+    </div>
+  </div>
+
+  <!-- Amount -->
+  <div class="card">
+    <div class="card-label">Amount Due</div>
+    <div class="amount-row">
+      <span class="amount-cur">$</span>
+      <span class="amount-big" id="amount">20</span>
+      <span class="amount-cur">USD</span>
+    </div>
+    <div class="amount-note">Monthly subscription · 30 days access</div>
+  </div>
+
+  <!-- InstaPay -->
+  <div class="card">
+    <div class="card-label">Pay via InstaPay</div>
+    <div class="ip-row">
+      <div>
+        <div class="ip-label">InstaPay Account</div>
+        <div class="ip-value" id="ip-account">—</div>
+      </div>
+      <button class="copy-btn" id="btn-copy-account" onclick="doCopy('ip-account','btn-copy-account')">Copy</button>
+    </div>
+    <div class="ip-row">
+      <div>
+        <div class="ip-label">Account Holder</div>
+        <div class="ip-value" id="ip-holder">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reference -->
+  <div class="card">
+    <div class="card-label">Your Unique Reference Code</div>
+    <div class="ref-box">
+      <div class="ref-label">📌 Include this in your transfer note</div>
+      <div class="ref-code" id="ref-code">—</div>
+      <div class="ref-note">Write this code in the transfer description / note field</div>
+    </div>
+    <button class="copy-btn" id="btn-copy-ref" onclick="doCopy('ref-code','btn-copy-ref')"
+      style="width:100%;padding:11px;border-radius:10px;">
+      📋 Copy Reference Code
+    </button>
+  </div>
+
+  <!-- Steps -->
+  <div class="card">
+    <div class="card-label">How To Pay</div>
+    <ul class="steps">
+      <li class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Open InstaPay and send <strong>$20 USD</strong> to the account above</div>
+      </li>
+      <li class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">In the transfer note write your <strong>reference code</strong></div>
+      </li>
+      <li class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Take a <strong>screenshot</strong> of the transfer confirmation</div>
+      </li>
+      <li class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">Fill the form below and submit your proof</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Proof Form -->
+  <div class="card" id="form-card">
+    <div class="form-title">Submit Payment Proof</div>
+    <div class="form-subtitle">Fill this after completing your transfer</div>
+
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" id="f-name" placeholder="e.g. Ahmed Mohamed" autocomplete="name" />
+    </div>
+
+    <div class="field">
+      <label>Last 4 Digits of Transaction ID</label>
+      <input type="tel" id="f-last4" placeholder="e.g. 4821"
+             maxlength="4" pattern="\d{4}" inputmode="numeric" />
+    </div>
+
+    <div class="field">
+      <label>Transfer Time</label>
+      <input type="text" id="f-time" placeholder="e.g. 3:45 PM — Jan 5, 2025" />
+    </div>
+
+    <div class="field">
+      <label>Payment Screenshot</label>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="f-file" accept="image/*" capture="environment" />
+        <div class="upload-icon">📷</div>
+        <div class="upload-text">Tap to upload screenshot</div>
+        <div class="upload-sub">JPG · PNG · WEBP — max 10 MB</div>
+      </div>
+      <div id="preview-wrap">
+        <img id="preview-img" src="" alt="Preview" />
+        <button id="remove-img" onclick="removeImage()">✕</button>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="btn-submit" onclick="submitProof()">
+      Submit Payment Proof
+    </button>
+  </div>
+
+  <!-- Already submitted / approved / rejected -->
+  <div class="card" id="state-section">
+    <div class="s-icon" id="s-icon">⏳</div>
+    <h2 id="s-title">Under Review</h2>
+    <p id="s-msg">Your payment proof is being verified. You'll be notified once approved.</p>
+  </div>
+
+</div><!-- #main -->
+
+<div id="toast"></div>
+
+<script>
+  // ─── IMPORTANT: change this to your Railway / Render backend URL ───
+  const API = 'https://YOUR-BACKEND-URL.up.railway.app';
+
+  let payment = null;
+
+  // ── Boot ─────────────────────────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', async () => {
+    const pid = new URLSearchParams(location.search).get('payment_id');
+
+    if (!pid) {
+      showError('No payment ID provided. Please open this page from the Dartech app.');
+      return;
+    }
+
+    try {
+      const res  = await fetch(`${API}/payment/${pid}`);
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || 'Payment not found');
+      payment = json.payment;
+      renderPage(payment);
+    } catch (e) {
+      showError(e.message || 'Failed to load payment. Please try again.');
+    }
+  });
+
+  // ── Render ────────────────────────────────────────────────────────────
+  function renderPage(p) {
+    document.getElementById('amount').textContent     = p.amount;
+    document.getElementById('ip-account').textContent = p.instapay_account;
+    document.getElementById('ip-holder').textContent  = p.instapay_holder;
+    document.getElementById('ref-code').textContent   = p.reference;
+
+    if (p.status === 'pending') {
+      document.getElementById('form-card').style.display  = 'block';
+      document.getElementById('state-section').style.display = 'none';
+    } else {
+      document.getElementById('form-card').style.display  = 'none';
+      showState(p.status);
+    }
+
+    document.getElementById('loading').classList.add('hide');
+    document.getElementById('main').classList.add('show');
+  }
+
+  function showState(status) {
+    const states = {
+      under_review: { icon:'⏳', title:'Under Review',      msg:'Your payment proof has been submitted and is being reviewed. You\'ll be notified once approved.' },
+      approved:     { icon:'✅', title:'Payment Approved!',  msg:'Your subscription is now active. Go back to the Dartech app to get started.' },
+      rejected:     { icon:'❌', title:'Payment Rejected',   msg:'Your payment could not be verified. Please contact support or submit a new proof.' },
+    };
+    const s = states[status] || states.under_review;
+    document.getElementById('s-icon').textContent  = s.icon;
+    document.getElementById('s-title').textContent = s.title;
+    document.getElementById('s-msg').textContent   = s.msg;
+    document.getElementById('state-section').classList.add('show');
+  }
+
+  // ── File upload preview ───────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('f-file');
+    const zone  = document.getElementById('upload-zone');
+
+    input.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('preview-img').src = ev.target.result;
+        document.getElementById('preview-wrap').style.display = 'block';
+        zone.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+    zone.addEventListener('dragleave', ()  => zone.classList.remove('over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+        input.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+
+  function removeImage() {
+    document.getElementById('f-file').value = '';
+    document.getElementById('preview-wrap').style.display = 'none';
+    document.getElementById('upload-zone').style.display  = 'block';
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────────
+  async function submitProof() {
+    const name   = document.getElementById('f-name').value.trim();
+    const last4  = document.getElementById('f-last4').value.trim();
+    const time   = document.getElementById('f-time').value.trim();
+    const file   = document.getElementById('f-file').files[0];
+
+    if (name.length < 2)            return toast('Please enter your full name', 'error');
+    if (!/^\d{4}$/.test(last4))     return toast('Enter exactly 4 digits', 'error');
+    if (!time)                      return toast('Please enter transfer time', 'error');
+    if (!file)                      return toast('Please upload your screenshot', 'error');
+
+    setBusy(true);
+
+    try {
+      const fd = new FormData();
+      fd.append('payment_id',  payment.id);
+      fd.append('name',        name);
+      fd.append('last4digits', last4);
+      fd.append('transfer_time', time);
+      fd.append('proof_image', file);
+
+      const res  = await fetch(`${API}/upload-proof`, { method: 'POST', body: fd });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || 'Submission failed');
+
+      location.href = `success.html?ref=${encodeURIComponent(payment.reference)}`;
+    } catch (e) {
+      toast(e.message || 'Something went wrong. Try again.', 'error');
+      setBusy(false);
+    }
+  }
+
+  function setBusy(on) {
+    const btn = document.getElementById('btn-submit');
+    btn.disabled     = on;
+    btn.textContent  = on ? '⏳ Submitting...' : 'Submit Payment Proof';
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────
+  function doCopy(elId, btnId) {
+    const text = document.getElementById(elId).textContent.trim();
+    const btn  = document.getElementById(btnId);
+    const orig = btn.textContent;
+
+    const fallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    };
+
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+      .catch(fallback)
+      .finally(() => {
+        btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+      });
+  }
+
+  let _tt;
+  function toast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `show ${type}`;
+    clearTimeout(_tt);
+    _tt = setTimeout(() => el.className = '', 3200);
+  }
+
+  function showError(msg) {
+    document.getElementById('loading').classList.add('hide');
+    document.getElementById('error-msg').textContent = msg;
+    document.getElementById('error-screen').classList.add('show');
+  }
+</script>
+</body>
+</html>

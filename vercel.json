@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "outputDirectory": "frontend",
+  "routes": [
+    { "src": "/",             "dest": "/index.html"   },
+    { "src": "/checkout",     "dest": "/checkout.html" },
+    { "src": "/checkout.html","dest": "/checkout.html" },
+    { "src": "/success",      "dest": "/success.html"  },
+    { "src": "/success.html", "dest": "/success.html"  },
+    { "src": "/admin",        "dest": "/admin.html"    },
+    { "src": "/admin.html",   "dest": "/admin.html"    }
+  ]
+}

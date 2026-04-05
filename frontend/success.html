@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Dartech — Payment Submitted</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #0a0f1e; color: #f1f5f9;
+      font-family: 'Sora', system-ui, sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      padding: 28px; -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 380px; width: 100%; text-align: center; }
+
+    /* Animated circle */
+    .circle {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: rgba(34,197,94,0.12); border: 2px solid #22c55e;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes pop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .circle span { font-size: 44px; animation: pop 0.3s 0.15s both; }
+
+    h1 { font-size: 26px; font-weight: 700; margin-bottom: 12px;
+         animation: up 0.4s 0.2s ease both; }
+    .sub { font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 28px;
+           animation: up 0.4s 0.3s ease both; }
+    @keyframes up {
+      from { opacity:0; transform: translateY(16px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* Info card */
+    .card {
+      background: #111827; border: 1px solid #1e2d45; border-radius: 14px;
+      padding: 20px; margin-bottom: 20px;
+      animation: up 0.4s 0.35s ease both;
+    }
+    .row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; }
+    .row + .row { border-top: 1px solid #1e2d45; }
+    .row-label { font-size: 12px; color: #64748b; }
+    .row-value { font-size: 13px; font-weight: 600; }
+
+    /* Timeline */
+    .tl { text-align: left; margin-bottom: 28px; animation: up 0.4s 0.45s ease both; }
+    .tl-title { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                letter-spacing: 0.08em; color: #64748b; margin-bottom: 16px; }
+    .tl-item { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
+    .dot {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+    .dot.done    { background: rgba(34,197,94,0.15); }
+    .dot.active  { background: rgba(245,158,11,0.15); }
+    .dot.waiting { background: #111827; border: 1px solid #1e2d45; }
+    .tl-text h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .tl-text p  { font-size: 12px; color: #64748b; }
+
+    /* Button */
+    .btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      border: none; border-radius: 12px; color: white;
+      font-family: inherit; font-size: 15px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 24px rgba(59,130,246,0.3);
+      animation: up 0.4s 0.5s ease both;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="circle"><span>✅</span></div>
+  <h1>Proof Submitted!</h1>
+  <p class="sub">Your payment has been received.<br/>We'll verify it within <strong>24 hours</strong>.</p>
+
+  <div class="card">
+    <div class="row">
+      <span class="row-label">Reference</span>
+      <span class="row-value" id="ref">—</span>
+    </div>
+    <div class="row">
+      <span class="row-label">Status</span>
+      <span class="row-value" style="color:#f59e0b;">Under Review</span>
+    </div>
+    <div class="row">
+      <span class="row-label">Review time</span>
+      <span class="row-value">Up to 24 hours</span>
+    </div>
+  </div>
+
+  <div class="tl">
+    <div class="tl-title">What happens next</div>
+    <div class="tl-item">
+      <div class="dot done">✓</div>
+      <div class="tl-text">
+        <h4>Proof Submitted</h4>
+        <p>Screenshot and details received</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="dot active">⏳</div>
+      <div class="tl-text">
+        <h4>Admin Verification</h4>
+        <p>Our team verifies the transfer</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="dot waiting">🏠</div>
+      <div class="tl-text">
+        <h4>Subscription Activated</h4>
+        <p>Full access to Dartech AI features</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" onclick="goBack()">← Back to Dartech App</button>
+
+</div>
+<script>
+  // Show reference from URL
+  const ref = new URLSearchParams(location.search).get('ref');
+  if (ref) document.getElementById('ref').textContent = ref;
+
+  function goBack() {
+    // React Native
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'PAYMENT_SUBMITTED' }));
+      return;
+    }
+    // Flutter
+    if (window.flutter_inappwebview) {
+      window.flutter_inappwebview.callHandler('paymentSubmitted');
+      return;
+    }
+    // Fallback
+    if (history.length > 1) history.go(-2);
+    else window.close();
+  }
+</script>
+</body>
+</html>
