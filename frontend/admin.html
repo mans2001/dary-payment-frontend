@@ -798,7 +798,13 @@
     // ── Stats ─────────────────────────────────────────────────────────────
     async function fetchStats() {
       try {
-        const r = await fetch(`${API}/admin/stats`, { headers: { Authorization: `Bearer ${pw}` } });
+        //const r = await fetch(`${API}/admin/stats`, { headers: { Authorization: `Bearer ${pw}` } });
+        const r = await fetch(`${API}/admin/stats`, {
+          headers: {
+            Authorization: `Bearer ${pw}`,
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
         const j = await r.json();
         if (!r.ok || !j.success) return false;
         const s = j.stats;
@@ -819,8 +825,15 @@
         '<div class="loading-s"><div class="spinner"></div><p>Loading…</p></div>';
       fetchStats();
       try {
-        const r = await fetch(`${API}/admin/payments?status=${filter}`,
-          { headers: { Authorization: `Bearer ${pw}` } });
+        //const r = await fetch(`${API}/admin/payments?status=${filter}`,
+        //  { headers: { Authorization: `Bearer ${pw}` } });
+        //
+        const r = await fetch(`${API}/admin/payments?status=${filter}`, {
+          headers: {
+            Authorization: `Bearer ${pw}`,
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
         const j = await r.json();
         if (!r.ok || !j.success) throw new Error(j.error);
         render(j.payments);
@@ -899,9 +912,20 @@
       const rj = document.getElementById(`rj-${id}`);
       ap.disabled = rj.disabled = true; ap.textContent = 'Approving…';
       try {
+        /*
+         const r = await fetch(`${API}/admin/approve`, {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${pw}` },
+           body: JSON.stringify({ payment_id: id })
+         });
+         */
         const r = await fetch(`${API}/admin/approve`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${pw}` },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${pw}`,
+            'ngrok-skip-browser-warning': 'true'
+          },
           body: JSON.stringify({ payment_id: id })
         });
         const j = await r.json();
@@ -928,9 +952,20 @@
       if (rj) { rj.disabled = true; rj.textContent = 'Rejecting…'; }
       if (ap) ap.disabled = true;
       try {
+        /*
         const r = await fetch(`${API}/admin/reject`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${pw}` },
+          body: JSON.stringify({ payment_id: id, reason })
+        });
+        */
+        const r = await fetch(`${API}/admin/reject`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${pw}`,
+            'ngrok-skip-browser-warning': 'true'
+          },
           body: JSON.stringify({ payment_id: id, reason })
         });
         const j = await r.json();

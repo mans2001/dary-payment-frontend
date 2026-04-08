@@ -688,7 +688,10 @@
       }
 
       try {
-        const res = await fetch(`${API}/payment/${pid}`);
+        //const res = await fetch(`${API}/payment/${pid}`);
+        const res = await fetch(`${API}/payment/${pid}`, {
+          headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
         const json = await res.json();
         if (!res.ok || !json.success) throw new Error(json.error || 'Payment not found');
         payment = json.payment;
@@ -789,7 +792,12 @@
         fd.append('transfer_time', time);
         fd.append('proof_image', file);
 
-        const res = await fetch(`${API}/upload-proof`, { method: 'POST', body: fd });
+        //const res = await fetch(`${API}/upload-proof`, { method: 'POST', body: fd });
+        const res = await fetch(`${API}/upload-proof`, {
+          method: 'POST',
+          body: fd,
+          headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
         const json = await res.json();
         if (!res.ok || !json.success) throw new Error(json.error || 'Submission failed');
 
