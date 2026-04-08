@@ -1,383 +1,867 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dartech — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:#0a0f1e; --surface:#111827; --s2:#1a2235; --border:#1e2d45;
-      --accent:#3b82f6; --success:#22c55e; --danger:#ef4444; --warning:#f59e0b;
-      --text:#f1f5f9; --muted:#64748b; --r:12px;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    body { background:var(--bg); color:var(--text); font-family:'Sora',system-ui,sans-serif;
-           font-size:14px; min-height:100vh; -webkit-font-smoothing:antialiased; }
+
+    :root {
+      --bg: #0a0f1e;
+      --surface: #111827;
+      --s2: #1a2235;
+      --border: #1e2d45;
+      --accent: #3b82f6;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --r: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Sora', system-ui, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
 
     /* ── LOGIN ── */
     #login {
-      min-height:100vh; display:flex; align-items:center;
-      justify-content:center; padding:24px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
+
     .login-box {
-      background:var(--surface); border:1px solid var(--border);
-      border-radius:20px; padding:40px; width:100%; max-width:360px; text-align:center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
     }
-    .logo { width:52px;height:52px;border-radius:14px;margin:0 auto 20px;
-            background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-            display:flex;align-items:center;justify-content:center;
-            font-size:22px;font-weight:700;color:#fff; }
-    .login-box h1 { font-size:20px;font-weight:700;margin-bottom:6px; }
-    .login-box p  { color:var(--muted);font-size:13px;margin-bottom:28px; }
+
+    .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .login-box h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .login-box p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 28px;
+    }
+
     .l-input {
-      width:100%;background:var(--s2);border:1px solid var(--border);
-      border-radius:10px;color:var(--text);font-family:inherit;font-size:14px;
-      padding:12px 16px;outline:none;margin-bottom:14px;transition:border-color .15s;
+      width: 100%;
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 12px 16px;
+      outline: none;
+      margin-bottom: 14px;
+      transition: border-color .15s;
     }
-    .l-input:focus { border-color:var(--accent); }
+
+    .l-input:focus {
+      border-color: var(--accent);
+    }
+
     .l-btn {
-      width:100%;padding:13px;background:linear-gradient(135deg,#3b82f6,#6366f1);
-      border:none;border-radius:10px;color:#fff;font-family:inherit;
-      font-size:14px;font-weight:700;cursor:pointer;
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
     }
-    .l-err { color:var(--danger);font-size:13px;margin-top:10px;min-height:18px; }
+
+    .l-err {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 10px;
+      min-height: 18px;
+    }
 
     /* ── DASHBOARD ── */
-    #dash { display:none; }
-    #dash.show { display:block; }
+    #dash {
+      display: none;
+    }
+
+    #dash.show {
+      display: block;
+    }
 
     .nav {
-      background:var(--surface);border-bottom:1px solid var(--border);
-      padding:14px 20px;display:flex;align-items:center;
-      justify-content:space-between;position:sticky;top:0;z-index:50;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
-    .nav-brand { display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px; }
-    .nav-logo  { width:34px;height:34px;border-radius:9px;flex-shrink:0;
-                 background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-                 display:flex;align-items:center;justify-content:center;
-                 color:#fff;font-weight:700;font-size:15px; }
-    .nav-right { display:flex;align-items:center;gap:12px; }
-    .badge { background:rgba(239,68,68,.15);color:var(--danger);
-             padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600; }
-    .logout {
-      background:none;border:1px solid var(--border);border-radius:8px;
-      color:var(--muted);padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px;
-    }
-    .logout:hover { border-color:var(--danger);color:var(--danger); }
 
-    .container { max-width:1080px;margin:0 auto;padding:24px 18px; }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .nav-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge {
+      background: rgba(239, 68, 68, .15);
+      color: var(--danger);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .logout {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      padding: 6px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+    }
+
+    .logout:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
 
     /* Stats */
-    .stats { display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-             gap:12px;margin-bottom:24px; }
-    .stat  { background:var(--surface);border:1px solid var(--border);
-             border-radius:var(--r);padding:16px 18px; }
-    .stat-lbl { font-size:11px;font-weight:600;text-transform:uppercase;
-                letter-spacing:.08em;color:var(--muted);margin-bottom:8px; }
-    .stat-num { font-size:30px;font-weight:700; }
-    .stat.rev  .stat-num { color:var(--warning); }
-    .stat.ok   .stat-num { color:var(--success); }
-    .stat.bad  .stat-num { color:var(--danger);  }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px 18px;
+    }
+
+    .stat-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-num {
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .stat.rev .stat-num {
+      color: var(--warning);
+    }
+
+    .stat.ok .stat-num {
+      color: var(--success);
+    }
+
+    .stat.bad .stat-num {
+      color: var(--danger);
+    }
 
     /* Toolbar */
-    .toolbar { display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap; }
-    .toolbar h2 { font-size:17px;font-weight:700;flex:1; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar h2 {
+      font-size: 17px;
+      font-weight: 700;
+      flex: 1;
+    }
+
     .fb {
-      padding:5px 13px;border-radius:99px;border:1px solid var(--border);
-      background:none;color:var(--muted);cursor:pointer;font-family:inherit;font-size:12px;
-      transition:.12s;
+      padding: 5px 13px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      transition: .12s;
     }
-    .fb:hover  { border-color:var(--accent);color:var(--accent); }
-    .fb.active { background:var(--accent);border-color:var(--accent);color:#fff; }
+
+    .fb:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .fb.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
     .ref-btn {
-      padding:5px 13px;border-radius:8px;border:1px solid var(--border);
-      background:none;color:var(--text);cursor:pointer;font-family:inherit;font-size:12px;
+      padding: 5px 13px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
     }
-    .ref-btn:hover { border-color:var(--accent); }
+
+    .ref-btn:hover {
+      border-color: var(--accent);
+    }
 
     /* Payment card */
-    .list { display:flex;flex-direction:column;gap:12px; }
-    .pcard {
-      background:var(--surface);border:1px solid var(--border);
-      border-radius:var(--r);overflow:hidden;
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
-    .pcard.under_review { border-left:3px solid var(--warning); }
-    .pcard.approved     { border-left:3px solid var(--success); }
-    .pcard.rejected     { border-left:3px solid var(--danger);  }
+
+    .pcard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+
+    .pcard.under_review {
+      border-left: 3px solid var(--warning);
+    }
+
+    .pcard.approved {
+      border-left: 3px solid var(--success);
+    }
+
+    .pcard.rejected {
+      border-left: 3px solid var(--danger);
+    }
 
     .ph {
-      padding:14px 18px;display:flex;align-items:center;
-      justify-content:space-between;gap:10px;flex-wrap:wrap;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
     }
-    .pref  { font-size:16px;font-weight:700;font-family:monospace;letter-spacing:.05em; }
-    .ptime { font-size:12px;color:var(--muted); }
-    .pill  { padding:3px 12px;border-radius:99px;font-size:12px;font-weight:600; }
-    .pill.pending      { background:rgba(100,116,139,.15);color:var(--muted); }
-    .pill.under_review { background:rgba(245,158,11,.15); color:var(--warning); }
-    .pill.approved     { background:rgba(34,197,94,.15);  color:var(--success); }
-    .pill.rejected     { background:rgba(239,68,68,.15);  color:var(--danger);  }
+
+    .pref {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: monospace;
+      letter-spacing: .05em;
+    }
+
+    .ptime {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pill {
+      padding: 3px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .pill.pending {
+      background: rgba(100, 116, 139, .15);
+      color: var(--muted);
+    }
+
+    .pill.under_review {
+      background: rgba(245, 158, 11, .15);
+      color: var(--warning);
+    }
+
+    .pill.approved {
+      background: rgba(34, 197, 94, .15);
+      color: var(--success);
+    }
+
+    .pill.rejected {
+      background: rgba(239, 68, 68, .15);
+      color: var(--danger);
+    }
 
     .pb {
-      padding:0 18px 18px;
-      display:grid;grid-template-columns:1fr 190px;gap:14px;align-items:start;
+      padding: 0 18px 18px;
+      display: grid;
+      grid-template-columns: 1fr 190px;
+      gap: 14px;
+      align-items: start;
     }
-    @media(max-width:560px){ .pb{ grid-template-columns:1fr; } }
 
-    .ig { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
-    .ii label { font-size:11px;color:var(--muted);display:block;margin-bottom:3px; }
-    .ii span  { font-size:13px;font-weight:500; }
+    @media(max-width:560px) {
+      .pb {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ig {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .ii label {
+      font-size: 11px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .ii span {
+      font-size: 13px;
+      font-weight: 500;
+    }
 
     .screenshot img {
-      width:100%;border-radius:8px;border:1px solid var(--border);
-      cursor:pointer;display:block;transition:opacity .15s;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: block;
+      transition: opacity .15s;
     }
-    .screenshot img:hover { opacity:.8; }
-    .sc-lbl { text-align:center;font-size:11px;color:var(--muted);margin-top:5px; }
-    .no-img { background:var(--s2);border-radius:8px;padding:20px;
-              text-align:center;font-size:12px;color:var(--muted); }
 
-    .actions { display:flex;gap:8px;margin-top:14px; }
-    .ap,.rj {
-      flex:1;padding:10px;border:none;border-radius:9px;
-      font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:.12s;
+    .screenshot img:hover {
+      opacity: .8;
     }
-    .ap { background:rgba(34,197,94,.12);color:var(--success);border:1px solid rgba(34,197,94,.3); }
-    .rj { background:rgba(239,68,68,.12);color:var(--danger); border:1px solid rgba(239,68,68,.3); }
-    .ap:hover { background:var(--success);color:#fff; }
-    .rj:hover { background:var(--danger); color:#fff; }
-    .ap:disabled,.rj:disabled { opacity:.4;cursor:not-allowed; }
+
+    .sc-lbl {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .no-img {
+      background: var(--s2);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .ap,
+    .rj {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .12s;
+    }
+
+    .ap {
+      background: rgba(34, 197, 94, .12);
+      color: var(--success);
+      border: 1px solid rgba(34, 197, 94, .3);
+    }
+
+    .rj {
+      background: rgba(239, 68, 68, .12);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, .3);
+    }
+
+    .ap:hover {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .rj:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .ap:disabled,
+    .rj:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
 
     .rej-reason {
-      margin-top:12px;padding:10px 14px;
-      background:rgba(239,68,68,.08);border-radius:8px;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(239, 68, 68, .08);
+      border-radius: 8px;
     }
-    .rej-reason strong { font-size:11px;color:var(--danger);display:block;margin-bottom:4px; }
-    .rej-reason span   { font-size:13px; }
+
+    .rej-reason strong {
+      font-size: 11px;
+      color: var(--danger);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .rej-reason span {
+      font-size: 13px;
+    }
 
     /* Empty / loading */
-    .empty,.loading-s { text-align:center;padding:56px 24px;color:var(--muted); }
-    .empty .ei { font-size:44px;margin-bottom:10px; }
-    .spinner { width:30px;height:30px;border:3px solid var(--border);
-               border-top-color:var(--accent);border-radius:50%;
-               animation:spin .8s linear infinite;margin:0 auto 12px; }
-    @keyframes spin { to{ transform:rotate(360deg); } }
+    .empty,
+    .loading-s {
+      text-align: center;
+      padding: 56px 24px;
+      color: var(--muted);
+    }
+
+    .empty .ei {
+      font-size: 44px;
+      margin-bottom: 10px;
+    }
+
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* Lightbox */
-    #lb { display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);
-          z-index:200;align-items:center;justify-content:center;padding:20px; }
-    #lb.open { display:flex; }
-    #lb img { max-width:100%;max-height:90vh;border-radius:10px;object-fit:contain; }
-    #lb-close { position:absolute;top:18px;right:18px;background:rgba(255,255,255,.1);
-                border:none;color:#fff;width:38px;height:38px;border-radius:50%;
-                font-size:18px;cursor:pointer; }
+    #lb {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .92);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #lb.open {
+      display: flex;
+    }
+
+    #lb img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 10px;
+      object-fit: contain;
+    }
+
+    #lb-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: rgba(255, 255, 255, .1);
+      border: none;
+      color: #fff;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+    }
 
     /* Reject modal */
-    #modal { display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
-             z-index:150;align-items:center;justify-content:center;padding:24px; }
-    #modal.open { display:flex; }
-    .mbox { background:var(--surface);border:1px solid var(--border);
-            border-radius:16px;padding:28px;width:100%;max-width:380px; }
-    .mbox h3 { font-size:16px;font-weight:700;margin-bottom:8px; }
-    .mbox p  { font-size:13px;color:var(--muted);margin-bottom:14px; }
-    .m-input { width:100%;background:var(--s2);border:1px solid var(--border);
-               border-radius:10px;color:var(--text);font-family:inherit;font-size:14px;
-               padding:10px 14px;outline:none;margin-bottom:14px; }
-    .m-input:focus { border-color:var(--danger); }
-    .m-acts { display:flex;gap:10px; }
-    .m-cancel {
-      flex:1;padding:11px;background:none;border:1px solid var(--border);
-      border-radius:9px;color:var(--muted);cursor:pointer;font-family:inherit;
+    #modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      z-index: 150;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
+
+    #modal.open {
+      display: flex;
+    }
+
+    .mbox {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .mbox h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .mbox p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .m-input {
+      width: 100%;
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 10px 14px;
+      outline: none;
+      margin-bottom: 14px;
+    }
+
+    .m-input:focus {
+      border-color: var(--danger);
+    }
+
+    .m-acts {
+      display: flex;
+      gap: 10px;
+    }
+
+    .m-cancel {
+      flex: 1;
+      padding: 11px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
     .m-confirm {
-      flex:1;padding:11px;background:var(--danger);border:none;
-      border-radius:9px;color:#fff;cursor:pointer;font-family:inherit;font-weight:700;
+      flex: 1;
+      padding: 11px;
+      background: var(--danger);
+      border: none;
+      border-radius: 9px;
+      color: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
     }
 
     /* Toast */
     #toast {
-      position:fixed;bottom:24px;left:50%;
-      transform:translateX(-50%) translateY(80px);
-      background:var(--surface);border:1px solid var(--border);
-      padding:12px 22px;border-radius:99px;font-size:13px;font-weight:500;
-      white-space:nowrap;transition:transform .3s ease;z-index:999;
-      box-shadow:0 8px 32px rgba(0,0,0,.4);
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 12px 22px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: transform .3s ease;
+      z-index: 999;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .4);
     }
-    #toast.show { transform:translateX(-50%) translateY(0); }
-    #toast.success { border-color:var(--success);color:var(--success); }
-    #toast.error   { border-color:var(--danger); color:var(--danger);  }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #toast.success {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    #toast.error {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
   </style>
 </head>
+
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <div class="login-box">
-    <div class="logo">D</div>
-    <h1>Admin Dashboard</h1>
-    <p>Dartech Payment Verification Panel</p>
-    <input class="l-input" type="password" id="pw" placeholder="Admin password"
-           onkeydown="if(event.key==='Enter')doLogin()" />
-    <button class="l-btn" onclick="doLogin()">Sign In</button>
-    <div class="l-err" id="l-err"></div>
-  </div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dash">
-  <nav class="nav">
-    <div class="nav-brand">
-      <div class="nav-logo">D</div>
-      Dartech Admin
-    </div>
-    <div class="nav-right">
-      <span class="badge" id="badge">—</span>
-      <button class="logout" onclick="doLogout()">Logout</button>
-    </div>
-  </nav>
-
-  <div class="container">
-    <div class="stats">
-      <div class="stat"><div class="stat-lbl">Total</div><div class="stat-num" id="s-total">—</div></div>
-      <div class="stat rev"><div class="stat-lbl">Under Review</div><div class="stat-num" id="s-rev">—</div></div>
-      <div class="stat ok"><div class="stat-lbl">Approved</div><div class="stat-num" id="s-ok">—</div></div>
-      <div class="stat bad"><div class="stat-lbl">Rejected</div><div class="stat-num" id="s-bad">—</div></div>
-    </div>
-
-    <div class="toolbar">
-      <h2>Payments</h2>
-      <button class="fb active" data-s="under_review" onclick="setFilter(this)">Under Review</button>
-      <button class="fb" data-s="pending"      onclick="setFilter(this)">Pending</button>
-      <button class="fb" data-s="approved"     onclick="setFilter(this)">Approved</button>
-      <button class="fb" data-s="rejected"     onclick="setFilter(this)">Rejected</button>
-      <button class="fb" data-s="all"          onclick="setFilter(this)">All</button>
-      <button class="ref-btn" onclick="load()">↻ Refresh</button>
-    </div>
-
-    <div id="list-wrap">
-      <div class="loading-s"><div class="spinner"></div><p>Loading…</p></div>
+  <!-- LOGIN -->
+  <div id="login">
+    <div class="login-box">
+      <div class="logo">D</div>
+      <h1>Admin Dashboard</h1>
+      <p>Dartech Payment Verification Panel</p>
+      <input class="l-input" type="password" id="pw" placeholder="Admin password"
+        onkeydown="if(event.key==='Enter')doLogin()" />
+      <button class="l-btn" onclick="doLogin()">Sign In</button>
+      <div class="l-err" id="l-err"></div>
     </div>
   </div>
-</div>
 
-<!-- Lightbox -->
-<div id="lb" onclick="closeLb()">
-  <button id="lb-close" onclick="closeLb()">✕</button>
-  <img id="lb-img" src="" alt="proof" onclick="event.stopPropagation()" />
-</div>
+  <!-- DASHBOARD -->
+  <div id="dash">
+    <nav class="nav">
+      <div class="nav-brand">
+        <div class="nav-logo">D</div>
+        Dartech Admin
+      </div>
+      <div class="nav-right">
+        <span class="badge" id="badge">—</span>
+        <button class="logout" onclick="doLogout()">Logout</button>
+      </div>
+    </nav>
 
-<!-- Reject modal -->
-<div id="modal">
-  <div class="mbox">
-    <h3>Reject Payment</h3>
-    <p>Provide a reason (optional):</p>
-    <input class="m-input" type="text" id="m-reason"
-           placeholder="e.g. Screenshot unclear, amount wrong…" />
-    <div class="m-acts">
-      <button class="m-cancel" onclick="closeModal()">Cancel</button>
-      <button class="m-confirm" onclick="confirmReject()">Reject</button>
+    <div class="container">
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-lbl">Total</div>
+          <div class="stat-num" id="s-total">—</div>
+        </div>
+        <div class="stat rev">
+          <div class="stat-lbl">Under Review</div>
+          <div class="stat-num" id="s-rev">—</div>
+        </div>
+        <div class="stat ok">
+          <div class="stat-lbl">Approved</div>
+          <div class="stat-num" id="s-ok">—</div>
+        </div>
+        <div class="stat bad">
+          <div class="stat-lbl">Rejected</div>
+          <div class="stat-num" id="s-bad">—</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <h2>Payments</h2>
+        <button class="fb active" data-s="under_review" onclick="setFilter(this)">Under Review</button>
+        <button class="fb" data-s="pending" onclick="setFilter(this)">Pending</button>
+        <button class="fb" data-s="approved" onclick="setFilter(this)">Approved</button>
+        <button class="fb" data-s="rejected" onclick="setFilter(this)">Rejected</button>
+        <button class="fb" data-s="all" onclick="setFilter(this)">All</button>
+        <button class="ref-btn" onclick="load()">↻ Refresh</button>
+      </div>
+
+      <div id="list-wrap">
+        <div class="loading-s">
+          <div class="spinner"></div>
+          <p>Loading…</p>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="toast"></div>
+  <!-- Lightbox -->
+  <div id="lb" onclick="closeLb()">
+    <button id="lb-close" onclick="closeLb()">✕</button>
+    <img id="lb-img" src="" alt="proof" onclick="event.stopPropagation()" />
+  </div>
 
-<script>
-  // ─── IMPORTANT: change this to your Railway / Render backend URL ───
-  const API = 'https://YOUR-BACKEND-URL.up.railway.app';
+  <!-- Reject modal -->
+  <div id="modal">
+    <div class="mbox">
+      <h3>Reject Payment</h3>
+      <p>Provide a reason (optional):</p>
+      <input class="m-input" type="text" id="m-reason" placeholder="e.g. Screenshot unclear, amount wrong…" />
+      <div class="m-acts">
+        <button class="m-cancel" onclick="closeModal()">Cancel</button>
+        <button class="m-confirm" onclick="confirmReject()">Reject</button>
+      </div>
+    </div>
+  </div>
 
-  let pw = '', filter = 'under_review', rejectId = null;
+  <div id="toast"></div>
 
-  // ── Login ─────────────────────────────────────────────────────────────
-  async function doLogin() {
-    const val = document.getElementById('pw').value;
-    if (!val) { document.getElementById('l-err').textContent = 'Password required'; return; }
-    pw = val;
-    const ok = await fetchStats();
-    if (ok) {
-      document.getElementById('login').style.display = 'none';
-      document.getElementById('dash').classList.add('show');
-      load();
-    } else {
-      document.getElementById('l-err').textContent = 'Wrong password';
+  <script>
+    // ─── IMPORTANT: change this to your Railway / Render backend URL ───
+    //const API = 'https://YOUR-BACKEND-URL.up.railway.app';
+    const API = ' https://providencia-spliceable-claretha.ngrok-free.dev';
+
+    let pw = '', filter = 'under_review', rejectId = null;
+
+    // ── Login ─────────────────────────────────────────────────────────────
+    async function doLogin() {
+      const val = document.getElementById('pw').value;
+      if (!val) { document.getElementById('l-err').textContent = 'Password required'; return; }
+      pw = val;
+      const ok = await fetchStats();
+      if (ok) {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('dash').classList.add('show');
+        load();
+      } else {
+        document.getElementById('l-err').textContent = 'Wrong password';
+        pw = '';
+      }
+    }
+
+    function doLogout() {
       pw = '';
+      document.getElementById('login').style.display = 'flex';
+      document.getElementById('dash').classList.remove('show');
+      document.getElementById('pw').value = '';
     }
-  }
 
-  function doLogout() {
-    pw = '';
-    document.getElementById('login').style.display = 'flex';
-    document.getElementById('dash').classList.remove('show');
-    document.getElementById('pw').value = '';
-  }
+    // ── Stats ─────────────────────────────────────────────────────────────
+    async function fetchStats() {
+      try {
+        const r = await fetch(`${API}/admin/stats`, { headers: { Authorization: `Bearer ${pw}` } });
+        const j = await r.json();
+        if (!r.ok || !j.success) return false;
+        const s = j.stats;
+        const total = (s.pending || 0) + (s.under_review || 0) + (s.approved || 0) + (s.rejected || 0);
+        document.getElementById('s-total').textContent = total;
+        document.getElementById('s-rev').textContent = s.under_review || 0;
+        document.getElementById('s-ok').textContent = s.approved || 0;
+        document.getElementById('s-bad').textContent = s.rejected || 0;
+        const n = s.under_review || 0;
+        document.getElementById('badge').textContent = n ? `${n} need review` : 'All clear ✓';
+        return true;
+      } catch { return false; }
+    }
 
-  // ── Stats ─────────────────────────────────────────────────────────────
-  async function fetchStats() {
-    try {
-      const r = await fetch(`${API}/admin/stats`, { headers:{ Authorization:`Bearer ${pw}` } });
-      const j = await r.json();
-      if (!r.ok || !j.success) return false;
-      const s = j.stats;
-      const total = (s.pending||0)+(s.under_review||0)+(s.approved||0)+(s.rejected||0);
-      document.getElementById('s-total').textContent = total;
-      document.getElementById('s-rev').textContent   = s.under_review||0;
-      document.getElementById('s-ok').textContent    = s.approved||0;
-      document.getElementById('s-bad').textContent   = s.rejected||0;
-      const n = s.under_review||0;
-      document.getElementById('badge').textContent   = n ? `${n} need review` : 'All clear ✓';
-      return true;
-    } catch { return false; }
-  }
-
-  // ── Load payments ─────────────────────────────────────────────────────
-  async function load() {
-    document.getElementById('list-wrap').innerHTML =
-      '<div class="loading-s"><div class="spinner"></div><p>Loading…</p></div>';
-    fetchStats();
-    try {
-      const r = await fetch(`${API}/admin/payments?status=${filter}`,
-        { headers:{ Authorization:`Bearer ${pw}` } });
-      const j = await r.json();
-      if (!r.ok || !j.success) throw new Error(j.error);
-      render(j.payments);
-    } catch(e) {
+    // ── Load payments ─────────────────────────────────────────────────────
+    async function load() {
       document.getElementById('list-wrap').innerHTML =
-        `<div class="empty"><div class="ei">⚠️</div><p>${e.message}</p></div>`;
+        '<div class="loading-s"><div class="spinner"></div><p>Loading…</p></div>';
+      fetchStats();
+      try {
+        const r = await fetch(`${API}/admin/payments?status=${filter}`,
+          { headers: { Authorization: `Bearer ${pw}` } });
+        const j = await r.json();
+        if (!r.ok || !j.success) throw new Error(j.error);
+        render(j.payments);
+      } catch (e) {
+        document.getElementById('list-wrap').innerHTML =
+          `<div class="empty"><div class="ei">⚠️</div><p>${e.message}</p></div>`;
+      }
     }
-  }
 
-  function setFilter(btn) {
-    document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    filter = btn.dataset.s;
-    load();
-  }
-
-  // ── Render ────────────────────────────────────────────────────────────
-  function render(list) {
-    const wrap = document.getElementById('list-wrap');
-    if (!list?.length) {
-      wrap.innerHTML = '<div class="empty"><div class="ei">🎉</div><p>No payments with this status</p></div>';
-      return;
+    function setFilter(btn) {
+      document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filter = btn.dataset.s;
+      load();
     }
-    const div = document.createElement('div');
-    div.className = 'list';
-    list.forEach(p => div.appendChild(card(p)));
-    wrap.innerHTML = '';
-    wrap.appendChild(div);
-  }
 
-  function statusLabel(s) {
-    return { pending:'⬤ Pending', under_review:'⏳ Under Review', approved:'✓ Approved', rejected:'✕ Rejected' }[s] || s;
-  }
+    // ── Render ────────────────────────────────────────────────────────────
+    function render(list) {
+      const wrap = document.getElementById('list-wrap');
+      if (!list?.length) {
+        wrap.innerHTML = '<div class="empty"><div class="ei">🎉</div><p>No payments with this status</p></div>';
+        return;
+      }
+      const div = document.createElement('div');
+      div.className = 'list';
+      list.forEach(p => div.appendChild(card(p)));
+      wrap.innerHTML = '';
+      wrap.appendChild(div);
+    }
 
-  function card(p) {
-    const d   = document.createElement('div');
-    d.className = `pcard ${p.status}`;
-    d.id = `card-${p.id}`;
-    const dt  = new Date(p.created_at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    const canAct = p.status === 'under_review' || p.status === 'pending';
-    d.innerHTML = `
+    function statusLabel(s) {
+      return { pending: '⬤ Pending', under_review: '⏳ Under Review', approved: '✓ Approved', rejected: '✕ Rejected' }[s] || s;
+    }
+
+    function card(p) {
+      const d = document.createElement('div');
+      d.className = `pcard ${p.status}`;
+      d.id = `card-${p.id}`;
+      const dt = new Date(p.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const canAct = p.status === 'under_review' || p.status === 'pending';
+      d.innerHTML = `
       <div class="ph">
         <div><div class="pref">${p.reference}</div><div class="ptime">${dt}</div></div>
         <span class="pill ${p.status}">${statusLabel(p.status)}</span>
@@ -385,12 +869,12 @@
       <div class="pb">
         <div>
           <div class="ig">
-            <div class="ii"><label>Name</label><span>${p.name||'—'}</span></div>
+            <div class="ii"><label>Name</label><span>${p.name || '—'}</span></div>
             <div class="ii"><label>Amount</label><span>$${p.amount} ${p.currency}</span></div>
-            <div class="ii"><label>Last 4 Digits</label><span>${p.last4digits?'****'+p.last4digits:'—'}</span></div>
-            <div class="ii"><label>Transfer Time</label><span>${p.transfer_time||'—'}</span></div>
+            <div class="ii"><label>Last 4 Digits</label><span>${p.last4digits ? '****' + p.last4digits : '—'}</span></div>
+            <div class="ii"><label>Transfer Time</label><span>${p.transfer_time || '—'}</span></div>
             <div class="ii"><label>User ID</label><span style="font-size:11px;color:var(--muted)">${p.user_id}</span></div>
-            <div class="ii"><label>Payment ID</label><span style="font-size:11px;color:var(--muted)">${p.id.slice(0,8)}…</span></div>
+            <div class="ii"><label>Payment ID</label><span style="font-size:11px;color:var(--muted)">${p.id.slice(0, 8)}…</span></div>
           </div>
           ${canAct ? `
           <div class="actions">
@@ -406,75 +890,76 @@
              </div>`
           : `<div class="no-img">No screenshot uploaded</div>`}
       </div>`;
-    return d;
-  }
-
-  // ── Approve ───────────────────────────────────────────────────────────
-  async function approve(id) {
-    const ap = document.getElementById(`ap-${id}`);
-    const rj = document.getElementById(`rj-${id}`);
-    ap.disabled = rj.disabled = true; ap.textContent = 'Approving…';
-    try {
-      const r = await fetch(`${API}/admin/approve`, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${pw}` },
-        body: JSON.stringify({ payment_id: id })
-      });
-      const j = await r.json();
-      if (!r.ok || !j.success) throw new Error(j.error);
-      toast('✅ Approved! Subscription activated.', 'success');
-      setTimeout(load, 700);
-    } catch(e) {
-      toast('Error: '+e.message, 'error');
-      ap.disabled = rj.disabled = false; ap.textContent = '✓ Approve';
+      return d;
     }
-  }
 
-  // ── Reject modal ──────────────────────────────────────────────────────
-  function openModal(id) { rejectId = id; document.getElementById('m-reason').value=''; document.getElementById('modal').classList.add('open'); }
-  function closeModal()  { document.getElementById('modal').classList.remove('open'); rejectId=null; }
-
-  async function confirmReject() {
-    if (!rejectId) return;
-    const reason = document.getElementById('m-reason').value.trim();
-    const id = rejectId;
-    closeModal();
-    const rj = document.getElementById(`rj-${id}`);
-    const ap = document.getElementById(`ap-${id}`);
-    if (rj) { rj.disabled=true; rj.textContent='Rejecting…'; }
-    if (ap) ap.disabled=true;
-    try {
-      const r = await fetch(`${API}/admin/reject`, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${pw}` },
-        body: JSON.stringify({ payment_id:id, reason })
-      });
-      const j = await r.json();
-      if (!r.ok || !j.success) throw new Error(j.error);
-      toast('Payment rejected.', 'success');
-      setTimeout(load, 700);
-    } catch(e) {
-      toast('Error: '+e.message, 'error');
-      if (rj) { rj.disabled=false; rj.textContent='✕ Reject'; }
-      if (ap) ap.disabled=false;
+    // ── Approve ───────────────────────────────────────────────────────────
+    async function approve(id) {
+      const ap = document.getElementById(`ap-${id}`);
+      const rj = document.getElementById(`rj-${id}`);
+      ap.disabled = rj.disabled = true; ap.textContent = 'Approving…';
+      try {
+        const r = await fetch(`${API}/admin/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${pw}` },
+          body: JSON.stringify({ payment_id: id })
+        });
+        const j = await r.json();
+        if (!r.ok || !j.success) throw new Error(j.error);
+        toast('✅ Approved! Subscription activated.', 'success');
+        setTimeout(load, 700);
+      } catch (e) {
+        toast('Error: ' + e.message, 'error');
+        ap.disabled = rj.disabled = false; ap.textContent = '✓ Approve';
+      }
     }
-  }
 
-  // ── Lightbox ──────────────────────────────────────────────────────────
-  function openLb(url) { document.getElementById('lb-img').src=url; document.getElementById('lb').classList.add('open'); }
-  function closeLb()   { document.getElementById('lb').classList.remove('open'); }
-  document.addEventListener('keydown', e => { if(e.key==='Escape') closeLb(); });
+    // ── Reject modal ──────────────────────────────────────────────────────
+    function openModal(id) { rejectId = id; document.getElementById('m-reason').value = ''; document.getElementById('modal').classList.add('open'); }
+    function closeModal() { document.getElementById('modal').classList.remove('open'); rejectId = null; }
 
-  // ── Toast ─────────────────────────────────────────────────────────────
-  let _t;
-  function toast(msg, type='success') {
-    const el = document.getElementById('toast');
-    el.textContent = msg; el.className = `show ${type}`;
-    clearTimeout(_t); _t = setTimeout(()=>el.className='', 3200);
-  }
+    async function confirmReject() {
+      if (!rejectId) return;
+      const reason = document.getElementById('m-reason').value.trim();
+      const id = rejectId;
+      closeModal();
+      const rj = document.getElementById(`rj-${id}`);
+      const ap = document.getElementById(`ap-${id}`);
+      if (rj) { rj.disabled = true; rj.textContent = 'Rejecting…'; }
+      if (ap) ap.disabled = true;
+      try {
+        const r = await fetch(`${API}/admin/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${pw}` },
+          body: JSON.stringify({ payment_id: id, reason })
+        });
+        const j = await r.json();
+        if (!r.ok || !j.success) throw new Error(j.error);
+        toast('Payment rejected.', 'success');
+        setTimeout(load, 700);
+      } catch (e) {
+        toast('Error: ' + e.message, 'error');
+        if (rj) { rj.disabled = false; rj.textContent = '✕ Reject'; }
+        if (ap) ap.disabled = false;
+      }
+    }
 
-  document.getElementById('pw').focus();
-  setInterval(()=>{ if(document.getElementById('dash').classList.contains('show')) load(); }, 60000);
-</script>
+    // ── Lightbox ──────────────────────────────────────────────────────────
+    function openLb(url) { document.getElementById('lb-img').src = url; document.getElementById('lb').classList.add('open'); }
+    function closeLb() { document.getElementById('lb').classList.remove('open'); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+    // ── Toast ─────────────────────────────────────────────────────────────
+    let _t;
+    function toast(msg, type = 'success') {
+      const el = document.getElementById('toast');
+      el.textContent = msg; el.className = `show ${type}`;
+      clearTimeout(_t); _t = setTimeout(() => el.className = '', 3200);
+    }
+
+    document.getElementById('pw').focus();
+    setInterval(() => { if (document.getElementById('dash').classList.contains('show')) load(); }, 60000);
+  </script>
 </body>
+
 </html>
